@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
+app.config['JSON_AS_ASCII'] = False
 
 import json
 
@@ -14,7 +15,9 @@ def index():
 @app.route("/createPods", methods=["POST"])
 def generate():
     players = request.json["players"] #.getlist('arrPlayers[]')
-    x = randomize(players)
+    x = {
+        "pods": randomize(players)
+    }
     return jsonify(x)
 
 
@@ -22,8 +25,7 @@ def randomize(players):
     import random
     import math
     
-    with open("config.json", "r") as jsonfile:
-        pod_names = json.load(jsonfile)["pod_names"]
+    pod_names = config["pod_names"]
     
     random.shuffle(pod_names)
     random.shuffle(players)
@@ -32,7 +34,6 @@ def randomize(players):
 
     pod = 0
     spot = 0
-    pods = []
     pods = [[0 for x in range(4)] for y in range(num_of_pods)]
     for p in players:
         pods[pod][spot] = p
